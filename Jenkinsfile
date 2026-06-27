@@ -12,5 +12,14 @@ pipeline {
                 bat 'mvnw.cmd clean package'
             }
         }
+
+        stage('Run') {
+            steps {
+                bat '''
+                taskkill /F /IM java.exe || exit /b 0
+                start /B java -jar target\\*.jar
+                '''
+            }
+        }
     }
 }
