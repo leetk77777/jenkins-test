@@ -14,15 +14,19 @@ pipeline {
         }
 
         stage('Run') {
-            steps {
-                bat '''
-                for /f "tokens=5" %%a in ('netstat -ano ^| findstr :8080') do taskkill /F /PID %%a 2>nul
-
-                for %%f in (target\\*.jar) do (
-                    start /B java -jar "%%f"
-                )
-                '''
-            }
-        }
+		    steps {
+		        bat '''
+		        @echo off
+		
+		        for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":8080" ^| findstr "LISTENING"') do (
+		            taskkill /F /PID %%a
+		        )
+		
+		        start "springboot" cmd /c "java -jar target\\jenkins-test-0.0.1-SNAPSHOT.jar > app.log 2>&1"
+		
+		        exit /b 0
+		        '''
+		    }
+		}
     }
 }
