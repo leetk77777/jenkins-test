@@ -23,7 +23,7 @@ pipeline {
 		            taskkill /F /PID %%a
 		        )
 		
-		        start "" /min cmd /c "cd /d %WORKSPACE% && java -jar target\\jenkins-test-0.0.1-SNAPSHOT.jar > app.log 2>&1"
+		        powershell -Command "Start-Process java -ArgumentList '-jar target\\jenkins-test-0.0.1-SNAPSHOT.jar' -WorkingDirectory '%WORKSPACE%' -RedirectStandardOutput 'app.log' -RedirectStandardError 'app-error.log'"
 		
 		        timeout /t 5 > nul
 		        netstat -ano | findstr ":8080"
