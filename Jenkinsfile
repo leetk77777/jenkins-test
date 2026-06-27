@@ -16,8 +16,11 @@ pipeline {
         stage('Run') {
             steps {
                 bat '''
-                for /f "tokens=5" %%a in ('netstat -ano ^| findstr :8080') do taskkill /F /PID %%a
-                start /B java -jar target\\*.jar
+                for /f "tokens=5" %%a in ('netstat -ano ^| findstr :8080') do taskkill /F /PID %%a 2>nul
+
+                for %%f in (target\\*.jar) do (
+                    start /B java -jar "%%f"
+                )
                 '''
             }
         }
