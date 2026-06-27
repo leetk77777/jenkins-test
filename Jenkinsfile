@@ -15,7 +15,17 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                bat 'deploy.bat'
+                bat '''
+                @echo off
+
+                for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":8080" ^| findstr "LISTENING"') do (
+                    taskkill /F /PID %%a
+                )
+
+                start "" /min cmd /c "java -jar target\\jenkins-test-0.0.1-SNAPSHOT.jar > app.log 2>&1"
+
+                exit /b 0
+                '''
             }
         }
     }
