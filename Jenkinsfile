@@ -29,7 +29,7 @@ pipeline {
                 )
 		
                 :: 백그라운드에서 자바 실행 (JENKINS_NODE_COOKIE 덕분에 유지됨)
-                start "" /B "%JAVA_HOME%\\bin\\java.exe" -jar "%WORKSPACE%\\target\\jenkins-test-0.0.1-SNAPSHOT.jar" > "%WORKSPACE%\\app.log" 2>&1
+                start "" cmd /c ""%JAVA_HOME%\bin\java.exe" -jar "%WORKSPACE%\target\jenkins-test-0.0.1-SNAPSHOT.jar" > "%WORKSPACE%\app.log" 2>&1"
 		
                 :: 5초 대기 후 포트 정상 작동 확인
                 timeout /t 5 > nul
