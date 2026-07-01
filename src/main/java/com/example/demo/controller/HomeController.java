@@ -8,7 +8,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String home() {
-        return "Spring Boot + Jenkins + GitHub Pipeline Success!";
+        return "Spring Boot + Jenkins + GitHub Pipeline Success! 123";
     }
 
     @GetMapping("/hello")
