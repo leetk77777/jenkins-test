@@ -26,7 +26,7 @@ public class MemberJobConfig {
             JdbcBatchItemWriter<Member> memberWriter) {
 
         return new StepBuilder("memberStep", jobRepository)
-                .<Member, Member>chunk(2)
+                .<Member, Member>chunk(3)
                 .transactionManager(transactionManager)
                 .reader(memberReader)
                 .processor(memberItemProcessor)
