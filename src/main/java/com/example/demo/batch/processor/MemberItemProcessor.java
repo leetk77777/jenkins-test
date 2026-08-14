@@ -9,10 +9,6 @@ public class MemberItemProcessor implements ItemProcessor<Member, Member> {
 
 	@Override
     public Member process(Member member) {
-
-		if (member.getId() == 3L) {
-	        throw new RuntimeException("테스트 오류 발생");
-	    }
 		
         member.setName(member.getName().toUpperCase());
         member.setAmount(member.getAmount() + 100);
