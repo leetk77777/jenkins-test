@@ -3,6 +3,7 @@ package com.example.demo.batch.job;
 import com.example.demo.batch.config.MemberBatchProperties;
 import com.example.demo.batch.domain.Member;
 import com.example.demo.batch.processor.MemberItemProcessor;
+import com.example.demo.batch.tasklet.MemberSummaryTasklet;
 
 import lombok.RequiredArgsConstructor;
 
@@ -43,10 +44,23 @@ public class MemberJobConfig {
     @Bean
     public Job memberJob(
             JobRepository jobRepository,
-            Step memberStep) {
+            Step memberStep,
+            Step summaryStep) {
 
         return new JobBuilder("memberJob", jobRepository)
                 .start(memberStep)
+                .next(summaryStep)
+                .build();
+    }
+    
+    @Bean
+    public Step summaryStep(
+            JobRepository jobRepository,
+            PlatformTransactionManager transactionManager,
+            MemberSummaryTasklet memberSummaryTasklet) {
+
+        return new StepBuilder("summaryStep", jobRepository)
+                .tasklet(memberSummaryTasklet, transactionManager)
                 .build();
     }
 }
