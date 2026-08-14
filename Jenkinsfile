@@ -4,47 +4,51 @@ pipeline {
     environment {
         JAVA_HOME = 'C:\\Users\\leetk\\AppData\\Local\\Programs\\Eclipse Adoptium\\jdk-21.0.11.10-hotspot'
         PATH = "${JAVA_HOME}\\bin;${env.PATH}"
+
+        IMAGE_NAME = 'jenkins-test'
+        DEPLOYMENT_NAME = 'jenkins-test'
+        CONTAINER_NAME = 'jenkins-test'
     }
 
     stages {
-        stage('Stop Old App') {
-            steps {
-                bat '''
-                @echo off
-
-                for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":8080" ^| findstr "LISTENING"') do (
-                    taskkill /F /PID %%a
-                )
-
-                exit /b 0
-                '''
-            }
-        }
 
         stage('Build') {
             steps {
-                bat 'mvnw.cmd clean package'
+                bat 'mvnw.cmd clean package -DskipTests'
             }
         }
 
-        stage('Deploy') {
-            environment {
-                JENKINS_NODE_COOKIE = 'dontKillMe'
-            }
+        stage('Docker Build') {
             steps {
                 bat '''
                 @echo off
                 cd /d "%WORKSPACE%"
 
-                if exist app.log del /f /q app.log
-                if exist app-error.log del /f /q app-error.log
+                docker build -t %IMAGE_NAME%:%BUILD_NUMBER% .
+                '''
+            }
+        }
 
-                start "" cmd /c ""%JAVA_HOME%\\bin\\java.exe" -jar "%WORKSPACE%\\target\\jenkins-test-0.0.1-SNAPSHOT.jar" 1>>"%WORKSPACE%\\app.log" 2>>"%WORKSPACE%\\app-error.log""
+        stage('Deploy Kubernetes') {
+            steps {
+                bat '''
+                @echo off
 
-                timeout /t 5 > nul
-                netstat -ano | findstr ":8080"
+                kubectl set image deployment/%DEPLOYMENT_NAME% %CONTAINER_NAME%=%IMAGE_NAME%:%BUILD_NUMBER%
 
-                exit /b 0
+                kubectl set env deployment/%DEPLOYMENT_NAME% SPRING_PROFILES_ACTIVE=dev
+                '''
+            }
+        }
+
+        stage('Check Deployment') {
+            steps {
+                bat '''
+                @echo off
+
+                kubectl rollout status deployment/%DEPLOYMENT_NAME% --timeout=120s
+
+                kubectl get pods
                 '''
             }
         }

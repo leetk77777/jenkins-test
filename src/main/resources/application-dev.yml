@@ -5,7 +5,7 @@ spring:
   application:
     name: demo
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://host.docker.internal:5432/postgres
     username: postgres
     password: 12345
     driver-class-name: org.postgresql.Driver
@@ -15,6 +15,12 @@ spring:
       enabled: false
     jdbc:
       initialize-schema: always
+
+batch:
+  member:
+    chunk-size: 2
+    schedule: "0 * * * * *"
+    enabled: true
 
 logging:
   level:

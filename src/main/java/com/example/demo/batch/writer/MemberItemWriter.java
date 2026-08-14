@@ -18,7 +18,11 @@ public class MemberItemWriter {
                 .dataSource(dataSource)
                 .sql("""
                     INSERT INTO member_result (id, name, amount)
-                    VALUES (:id, :name, :amount)
+				    VALUES (:id, :name, :amount)
+				    ON CONFLICT (id)
+				    DO UPDATE SET
+				        name = EXCLUDED.name,
+				        amount = EXCLUDED.amount
                     """)
                 .beanMapped()
                 .build();

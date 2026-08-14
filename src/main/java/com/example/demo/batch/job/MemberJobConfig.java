@@ -1,7 +1,10 @@
 package com.example.demo.batch.job;
 
+import com.example.demo.batch.config.MemberBatchProperties;
 import com.example.demo.batch.domain.Member;
 import com.example.demo.batch.processor.MemberItemProcessor;
+
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.batch.core.job.Job;
 import org.springframework.batch.core.job.builder.JobBuilder;
@@ -15,7 +18,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
+@RequiredArgsConstructor
 public class MemberJobConfig {
+	
+	private final MemberBatchProperties properties;
 
 	@Bean
     public Step memberStep(
@@ -26,7 +32,7 @@ public class MemberJobConfig {
             JdbcBatchItemWriter<Member> memberWriter) {
 
         return new StepBuilder("memberStep", jobRepository)
-                .<Member, Member>chunk(3)
+                .<Member, Member>chunk(properties.chunkSize())
                 .transactionManager(transactionManager)
                 .reader(memberReader)
                 .processor(memberItemProcessor)

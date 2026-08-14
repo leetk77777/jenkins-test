@@ -7,6 +7,8 @@ import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.example.demo.batch.config.MemberBatchProperties;
+
 import lombok.RequiredArgsConstructor;
 
 @Component
@@ -15,9 +17,14 @@ public class BatchScheduler {
 
 	private final JobOperator jobOperator;
     private final Job memberJob;
+    private final MemberBatchProperties properties;
 
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "${batch.member.schedule}")
     public void runMemberJob() throws Exception {
+    	
+    	if (!properties.enabled()) {
+            return;
+        }
 
         JobParameters parameters = new JobParametersBuilder()
                 .addLong("runTime", System.currentTimeMillis())
