@@ -4,6 +4,7 @@ pipeline {
     environment {
         JAVA_HOME = 'C:\\Users\\leetk\\AppData\\Local\\Programs\\Eclipse Adoptium\\jdk-21.0.11.10-hotspot'
         DOCKER_HOME = 'C:\\Users\\leetk\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin'
+        KUBECONFIG = 'C:\\Users\\leetk\\.kube\\config'
 
         PATH = "${JAVA_HOME}\\bin;${DOCKER_HOME};${env.PATH}"
 
@@ -37,12 +38,15 @@ pipeline {
         }
 
         stage('Kubernetes Check') {
-            steps {
-                bat '''
-                kubectl get nodes
-                '''
-            }
-        }
+		    steps {
+		        bat '''
+		        @echo off
+		        echo KUBECONFIG=%KUBECONFIG%
+		        kubectl config current-context
+		        kubectl get nodes
+		        '''
+		    }
+		}
 
         stage('Deploy Kubernetes') {
             steps {
