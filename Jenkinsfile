@@ -3,11 +3,13 @@ pipeline {
 
     environment {
         JAVA_HOME = 'C:\\Users\\leetk\\AppData\\Local\\Programs\\Eclipse Adoptium\\jdk-21.0.11.10-hotspot'
-	    PATH = "${JAVA_HOME}\\bin;${DOCKER_HOME};${env.PATH}"
-	
-	    IMAGE_NAME = 'jenkins-test'
-	    DEPLOYMENT_NAME = 'jenkins-test'
-	    CONTAINER_NAME = 'jenkins-test'
+        DOCKER_HOME = 'C:\\Users\\leetk\\AppData\\Local\\Programs\\Docker\\Desktop\\resources\\bin'
+
+        PATH = "${JAVA_HOME}\\bin;${DOCKER_HOME};${env.PATH}"
+
+        IMAGE_NAME = 'jenkins-test'
+        DEPLOYMENT_NAME = 'jenkins-test'
+        CONTAINER_NAME = 'jenkins-test'
     }
 
     stages {
@@ -17,33 +19,36 @@ pipeline {
                 bat 'mvnw.cmd clean package -DskipTests'
             }
         }
-        
+
         stage('Docker Check') {
-		    steps {
-		        bat '''
-		        "C:\\Users\\leetk\\AppData\\Local\\Programs\\Docker\\Desktop\\resources\\bin\\docker.exe" --version
-		        '''
-		    }
-		}
+            steps {
+                bat 'docker --version'
+            }
+        }
 
         stage('Docker Build') {
-		    steps {
-		        bat '''
-		        @echo off
-		        cd /d "%WORKSPACE%"
-		
-		        "C:\\Users\\leetk\\AppData\\Local\\Programs\\Docker\\Desktop\\resources\\bin\\docker.exe" build -t %IMAGE_NAME%:%BUILD_NUMBER% .
-		        '''
-		    }
-		}
+            steps {
+                bat '''
+                @echo off
+                cd /d "%WORKSPACE%"
+                docker build -t %IMAGE_NAME%:%BUILD_NUMBER% .
+                '''
+            }
+        }
+
+        stage('Kubernetes Check') {
+            steps {
+                bat '''
+                kubectl get nodes
+                '''
+            }
+        }
 
         stage('Deploy Kubernetes') {
             steps {
                 bat '''
                 @echo off
-
                 kubectl set image deployment/%DEPLOYMENT_NAME% %CONTAINER_NAME%=%IMAGE_NAME%:%BUILD_NUMBER%
-
                 kubectl set env deployment/%DEPLOYMENT_NAME% SPRING_PROFILES_ACTIVE=dev
                 '''
             }
@@ -53,9 +58,7 @@ pipeline {
             steps {
                 bat '''
                 @echo off
-
                 kubectl rollout status deployment/%DEPLOYMENT_NAME% --timeout=120s
-
                 kubectl get pods
                 '''
             }
