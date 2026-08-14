@@ -1,24 +1,20 @@
 package com.example.demo.batch.config;
 
-import org.springframework.batch.core.configuration.JobRegistry;
-import org.springframework.batch.core.launch.JobOperator;
-import org.springframework.batch.core.launch.support.JobOperatorFactoryBean;
-import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 
-@Configuration
+@Component
 @RequiredArgsConstructor
-public class BatchExecutorConfig {
+public class BatchExecutorConfig extends DefaultBatchConfiguration {
 
 	private final BatchExecutorProperties properties;
-	
-	@Bean(name = "batchTaskExecutor")
-    public ThreadPoolTaskExecutor batchTaskExecutor() {
+
+    @Override
+    protected TaskExecutor getTaskExecutor() {
 
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 
@@ -30,24 +26,5 @@ public class BatchExecutorConfig {
         executor.initialize();
 
         return executor;
-    }
-	
-	@Bean
-    public JobOperator jobOperator(
-            JobRepository jobRepository,
-            JobRegistry jobRegistry,
-            PlatformTransactionManager transactionManager,
-            ThreadPoolTaskExecutor batchTaskExecutor) throws Exception {
-
-        JobOperatorFactoryBean factory = new JobOperatorFactoryBean();
-
-        factory.setJobRepository(jobRepository);
-        factory.setJobRegistry(jobRegistry);
-        factory.setTransactionManager(transactionManager);
-        factory.setTaskExecutor(batchTaskExecutor);
-
-        factory.afterPropertiesSet();
-
-        return factory.getObject();
     }
 }
