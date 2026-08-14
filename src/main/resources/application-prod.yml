@@ -17,8 +17,21 @@ spring:
       initialize-schema: always
 
 batch:
+  executor:
+    core-pool-size: 2
+    max-pool-size: 2
+    queue-capacity: 100
+
   member:
     chunk-size: 2
+    schedule: "0 * * * * *"
+    enabled: true
+
+  settlement:
+    enabled: true
+    schedule: "0 * * * * *"
+
+  report:
     schedule: "0 * * * * *"
     enabled: true
 
