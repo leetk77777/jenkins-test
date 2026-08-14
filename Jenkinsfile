@@ -3,11 +3,13 @@ pipeline {
 
     environment {
         JAVA_HOME = 'C:\\Users\\leetk\\AppData\\Local\\Programs\\Eclipse Adoptium\\jdk-21.0.11.10-hotspot'
-        PATH = "${JAVA_HOME}\\bin;${env.PATH}"
-
-        IMAGE_NAME = 'jenkins-test'
-        DEPLOYMENT_NAME = 'jenkins-test'
-        CONTAINER_NAME = 'jenkins-test'
+	    DOCKER_HOME = 'C:\\Users\\leetk\\AppData\\Local\\Programs\\Docker\\Desktop\\resources\\bin'
+	
+	    PATH = "${JAVA_HOME}\\bin;${DOCKER_HOME};${env.PATH}"
+	
+	    IMAGE_NAME = 'jenkins-test'
+	    DEPLOYMENT_NAME = 'jenkins-test'
+	    CONTAINER_NAME = 'jenkins-test'
     }
 
     stages {
@@ -17,6 +19,12 @@ pipeline {
                 bat 'mvnw.cmd clean package -DskipTests'
             }
         }
+        
+        stage('Docker Check') {
+	        steps {
+	            bat 'docker --version'
+	        }
+	    }
 
         stage('Docker Build') {
             steps {

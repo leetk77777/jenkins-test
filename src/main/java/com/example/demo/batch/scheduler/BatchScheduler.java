@@ -28,7 +28,7 @@ public class BatchScheduler {
 
         JobParameters parameters = new JobParametersBuilder()
                 .addLong("runTime", System.currentTimeMillis())
-                .toJobParameters(); 
+                .toJobParameters();
 
         jobOperator.start(memberJob, parameters);
     }
