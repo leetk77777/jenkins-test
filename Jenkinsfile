@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         JAVA_HOME = 'C:\\Users\\leetk\\AppData\\Local\\Programs\\Eclipse Adoptium\\jdk-21.0.11.10-hotspot'
-        DOCKER_HOME = 'C:\\Users\\leetk\\AppData\\Local\\Programs\\Docker\\Desktop\\resources\\bin'
+        DOCKER_HOME = 'C:\\Users\\leetk\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin'
 
         PATH = "${JAVA_HOME}\\bin;${DOCKER_HOME};${env.PATH}"
 
